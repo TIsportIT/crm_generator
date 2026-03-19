@@ -1,0 +1,233 @@
+/*
+  Глобальные стили + дизайн-параметры.
+  Angular подключает именно этот файл (см. apps/web/angular.json).
+*/
+
+:root {
+  /* ——— Тема (как в твоём блоке) ——— */
+  --background: oklch(0.8452 0 0);
+  --foreground: oklch(0.2393 0 0);
+  --card: oklch(0.7572 0 0);
+  --card-foreground: oklch(0.2393 0 0);
+  --popover: oklch(0.7572 0 0);
+  --popover-foreground: oklch(0.2393 0 0);
+  --primary: oklch(0.5173 0.1035 45.7958);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.445 0.0709 136.7645);
+  --secondary-foreground: oklch(1 0 0);
+  --muted: oklch(0.7826 0 0);
+  --muted-foreground: oklch(0.4091 0 0);
+  --accent: oklch(0.5088 0.0929 270.9162);
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.7431 0.1429 90.5836);
+  --destructive-foreground: oklch(0 0 0);
+  --border: oklch(0.4313 0 0);
+  --input: oklch(0.4313 0 0);
+  --ring: oklch(0.5173 0.1035 45.7958);
+  --chart-1: oklch(0.5173 0.1035 45.7958);
+  --chart-2: oklch(0.445 0.0709 136.7645);
+  --chart-3: oklch(0.5088 0.0929 270.9162);
+  --chart-4: oklch(0.7431 0.1429 90.5836);
+  --chart-5: oklch(0.5675 0.0287 78.7622);
+
+  --font-sans: "Oxanium", sans-serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: "Source Code Pro", monospace;
+
+  /* ——— Привязка к переменным текущего приложения ——— */
+  --bg-page: var(--background);
+  --bg-surface: var(--card);
+  --bg-panel: var(--card);
+  --text-primary: var(--foreground);
+  --text-secondary: var(--muted-foreground);
+  --border-subtle: color-mix(in srgb, var(--border) 75%, transparent);
+  --hover-bg: color-mix(in srgb, var(--bg-panel) 90%, transparent);
+  --accent-bg: color-mix(in srgb, var(--accent) 18%, transparent);
+  --accent-hover: color-mix(in srgb, var(--accent) 85%, #000 15%);
+
+  /* ——— Скругления ——— */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* ——— Отступы ——— */
+  --space-content: 18px;
+  --space-topbar-y: 14px;
+  --space-topbar-x: 18px;
+  --space-panel: 12px 16px;
+  --space-list: 8px;
+  --space-list-item: 10px 12px;
+  --gap-page: 20px;
+  --gap-cols: 24px;
+
+  /* ——— Шрифты ——— */
+  --font-family: var(--font-sans);
+  --font-size-base: 1rem;
+  --font-size-sm: 0.875rem;
+  --font-size-xs: 0.8125rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.5rem;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ——— Кнопки ——— */
+  --btn-padding-y: 6px;
+  --btn-padding-x: 12px;
+  --btn-font-size: var(--font-size-sm);
+  --btn-border-radius: var(--radius-md);
+  --btn-sm-padding-y: 4px;
+  --btn-sm-padding-x: 8px;
+  --btn-sm-font-size: var(--font-size-xs);
+
+  /* ——— Поля ввода (формы, диалоги) ——— */
+  --input-height: 36px;
+  --input-padding-x: 10px;
+  --input-border-radius: var(--radius-md);
+  --input-font-size: var(--font-size-base);
+
+  /* ——— Формы в диалогах ——— */
+  --form-section-gap: 12px;
+  --form-label-field-gap: 4px;
+  --form-row-gap-x: 10px;
+  --form-row-gap-y: 8px;
+  --form-two-col-gap: var(--gap-cols);
+  --form-input-height-compact: 32px;
+}
+
+.dark {
+  --background: oklch(0.2178 0 0);
+  --foreground: oklch(0.9067 0 0);
+  --card: oklch(0.285 0 0);
+  --muted-foreground: oklch(0.7058 0 0);
+  --accent: oklch(0.637 0.1353 270.2422);
+  --border: oklch(0.4091 0 0);
+
+  --bg-page: var(--background);
+  --bg-surface: var(--card);
+  --bg-panel: var(--card);
+  --text-primary: var(--foreground);
+  --text-secondary: var(--muted-foreground);
+  --border-subtle: color-mix(in srgb, var(--border) 75%, transparent);
+  --hover-bg: color-mix(in srgb, var(--bg-panel) 90%, transparent);
+  --accent-bg: color-mix(in srgb, var(--accent) 18%, transparent);
+  --accent-hover: color-mix(in srgb, var(--accent) 85%, #000 15%);
+}
+
+/* ---------- Controls ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+}
+
+.input,
+input[type="text"],
+select {
+  height: var(--input-height);
+  padding: 0 var(--input-padding-x);
+  border: 1px solid var(--border);
+  border-radius: var(--input-border-radius);
+  font-size: var(--input-font-size);
+  font-family: var(--font-family);
+  background: var(--bg-panel);
+  color: var(--text-primary);
+  width: 100%;
+}
+
+.input:focus,
+input[type="text"]:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+textarea.input {
+  min-height: 60px;
+  padding: 8px var(--input-padding-x);
+  resize: vertical;
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-group label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+input.input-number {
+  width: 100%;
+  max-width: 100%;
+}
+
+input.input-number::-webkit-outer-spin-button,
+input.input-number::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="text"].input-number::-webkit-outer-spin-button,
+input[type="text"].input-number::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Buttons (global, used in shared components) ---------- */
+.btn {
+  padding: var(--btn-padding-y) var(--btn-padding-x);
+  border-radius: var(--btn-border-radius);
+  font-size: var(--btn-font-size);
+  font-weight: var(--font-weight-medium);
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+.btn-ghost:hover {
+  background: var(--hover-bg);
+}
+
+.btn-sm {
+  padding: var(--btn-sm-padding-y) var(--btn-sm-padding-x);
+  font-size: var(--btn-sm-font-size);
+}
+

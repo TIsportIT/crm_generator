@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model HealthcheckPing {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+}
+
+model Organization {
+  id                    String    @id @default(cuid())
+  name                  String
+  fullName              String?
+  shortName             String?
+  inn                   String?
+  kpp                   String?
+  ogrn                  String?
+  okpo                  String?
+  okved                 String?
+  legalAddress          String?
+  actualAddress         String?
+  postalAddress         String?
+  bankName              String?
+  bik                   String?
+  settlementAccount     String?
+  correspondentAccount String?
+  phone                 String?
+  extraPhone            String?
+  email                 String?
+  website               String?
+  directorFio           String?
+  directorFioShort      String?
+  directorPosition      String?
+  directorActingOn      String?
+  fssNumber             String?
+  pfrNumber             String?
+  logoUrl               String?
+  signatureUrl          String?
+  stampUrl              String?
+  notes                 String?
+  markup                Decimal?
+  prefix                String?
+  vatPercent            Decimal?
+  accentColor           String?
+  requisites            String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  clients               Client[]
+}
+
+model Client {
+  id             String    @id @default(cuid())
+  name           String
+  organizationId String
+  inn            String?
+  kpp            String?
+  contactPerson  String?
+  phone          String?
+  email          String?
+  requisites     String?
+  address        String?
+  notes          String?
+  discount       Decimal?
+  clientMarkup   Decimal?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
