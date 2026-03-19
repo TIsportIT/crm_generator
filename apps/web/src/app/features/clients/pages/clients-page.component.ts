@@ -1,11 +1,17 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ApiClient, Client, Organization } from '../../../core/http/api-client';
+import { DialogComponent } from '../../../shared/ui/dialog/dialog.component';
+import { AvatarCircleTrayComponent } from '../../../shared/ui/avatar-circle-tray/avatar-circle-tray.component';
 
 @Component({
   selector: 'app-clients-page',
   standalone: true,
-  imports: [FormsModule],
+  imports: [
+    FormsModule,
+    DialogComponent,
+    AvatarCircleTrayComponent,
+  ],
   template: `
     <div class="page">
       <header class="page-header">
@@ -43,9 +49,8 @@ import { ApiClient, Client, Organization } from '../../../core/http/api-client';
         <section class="panel">
           <div class="panel-head">
             <h2 class="panel-title">Заказчики</h2>
-            <button type="button" class="btn btn-primary" (click)="openClientCreate()">Добавить заказчика</button>
+            <button type="button" class="btn btn-primary" (click)="openClientCreate()">Добавить</button>
           </div>
-
           <ul class="list">
             @if (!selectedOrgId()) {
               <li class="list-empty">Выберите организацию слева</li>
@@ -66,61 +71,76 @@ import { ApiClient, Client, Organization } from '../../../core/http/api-client';
       </div>
     </div>
 
-    <!-- Add Organization modal -->
-    <div class="modal-overlay" [class.open]="orgCreateOpen()">
-      @if (orgCreateOpen()) {
-        <div class="modal" role="dialog">
-          <div class="modal-head">
-            <h3 class="modal-title">Новая организация</h3>
-            <button type="button" class="dialog-close" (click)="closeOrgCreate()">×</button>
-          </div>
-          <div class="modal-body">
-            <label class="field">
-              <span class="field-label">Название</span>
-              <input class="input" type="text" [(ngModel)]="orgName" />
-            </label>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-ghost" (click)="closeOrgCreate()">Отмена</button>
-            <button type="button" class="btn btn-primary" [disabled]="!orgName.trim()" (click)="createOrg()">Создать</button>
-          </div>
-        </div>
-      }
-    </div>
+    <!-- Add Organization dialog (UI-consistent) -->
+    <app-dialog
+      [open]="orgCreateOpen()"
+      [title]="'Новая организация'"
+      size="sm"
+      (close)="closeOrgCreate()"
+    >
+      <label class="field">
+        <span class="field-label">Название</span>
+        <input class="input" type="text" [(ngModel)]="orgName" />
+      </label>
+      <div footer class="dialog-footer">
+        <button type="button" class="btn btn-ghost" (click)="closeOrgCreate()">Отмена</button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          [disabled]="!orgName.trim()"
+          (click)="createOrg()"
+        >
+          Создать
+        </button>
+      </div>
+    </app-dialog>
 
-    <!-- Add Client modal -->
-    <div class="modal-overlay" [class.open]="clientCreateOpen()">
-      @if (clientCreateOpen()) {
-        <div class="modal" role="dialog">
-          <div class="modal-head">
-            <h3 class="modal-title">Новый заказчик</h3>
-            <button type="button" class="dialog-close" (click)="closeClientCreate()">×</button>
-          </div>
-          <div class="modal-body">
-            @if (selectedOrgId()) {
-              <div class="hint">
-                Организация: <b>{{ selectedOrgName() }}</b>
-              </div>
-            }
-            <label class="field">
-              <span class="field-label">Название</span>
-              <input class="input" type="text" [(ngModel)]="clientName" />
-            </label>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-ghost" (click)="closeClientCreate()">Отмена</button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              [disabled]="!selectedOrgId() || !clientName.trim()"
-              (click)="createClient()"
-            >
-              Создать
-            </button>
-          </div>
+    <!-- Add Client dialog (UI-consistent) -->
+    <app-dialog
+      [open]="clientCreateOpen()"
+      [title]="'Новый заказчик'"
+      size="sm"
+      (close)="closeClientCreate()"
+    >
+      <div class="client-org">
+        <div class="client-org-title">Организация</div>
+
+        <div class="client-org-picker">
+          <app-avatar-circle-tray
+            [options]="orgAvatarOptions()"
+            [value]="selectedOrgId()"
+            (valueChange)="onOrganizationPicked($event)"
+            (addRequested)="openOrgCreateFromClient()"
+            [size]="40"
+            [maxSlots]="3"
+            [selectDialogSize]="'xs'"
+          />
         </div>
-      }
-    </div>
+
+        @if (selectedOrgId()) {
+          <div class="client-org-name">{{ selectedOrgName() }}</div>
+        } @else {
+          <div class="client-org-empty">Сначала добавьте организацию</div>
+        }
+      </div>
+
+      <label class="field">
+        <span class="field-label">Название</span>
+        <input class="input" type="text" [(ngModel)]="clientName" />
+      </label>
+
+      <div footer class="dialog-footer">
+        <button type="button" class="btn btn-ghost" (click)="closeClientCreate()">Отмена</button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          [disabled]="!selectedOrgId() || !clientName.trim()"
+          (click)="createClient()"
+        >
+          Создать
+        </button>
+      </div>
+    </app-dialog>
   `,
   styles: [
     `
@@ -144,20 +164,14 @@ import { ApiClient, Client, Organization } from '../../../core/http/api-client';
       .list-item-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .list-item-meta { font-size: var(--font-size-xs); opacity: 0.75; }
 
-      /* Modal */
-      .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.25); display: none; align-items: center; justify-content: center; z-index: 1000; padding: var(--space-content); }
-      .modal-overlay.open { display: flex; }
-      .modal { background: var(--bg-panel); border-radius: var(--radius-lg); box-shadow: 0 8px 32px rgba(0,0,0,0.15); width: min(900px, 100%); max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; }
-      .modal-head { display: flex; align-items: center; justify-content: space-between; padding: var(--space-panel); border-bottom: 1px solid var(--border-subtle); }
-      .modal-title { margin: 0; font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); }
-      .dialog-close { background: none; border: none; font-size: 1.5rem; line-height: 1; cursor: pointer; color: var(--text-secondary); padding: 4px; }
-      .modal-body { padding: var(--space-panel); overflow: auto; }
-      .modal-footer { padding: var(--space-panel); border-top: 1px solid var(--border-subtle); display: flex; justify-content: flex-end; gap: var(--radius-md); }
-
       .field { display: flex; flex-direction: column; gap: 6px; }
       .field-label { font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); color: var(--text-primary); }
-
-      .hint { margin-bottom: 12px; opacity: 0.9; font-size: var(--font-size-sm); }
+      .client-org { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+      .client-org-title { font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); color: var(--text-primary); }
+      .client-org-picker { display: flex; align-items: center; }
+      .client-org-name { font-size: var(--font-size-sm); color: var(--text-secondary); }
+      .client-org-empty { font-size: var(--font-size-sm); color: var(--text-secondary); opacity: 0.9; }
+      .dialog-footer { display: flex; width: 100%; justify-content: flex-end; gap: var(--radius-md); }
     `,
   ],
 })
@@ -174,12 +188,20 @@ export class ClientsPageComponent {
   orgName = '';
   clientName = '';
 
+  private reopenClientDialogAfterOrg = false;
+
   organizationsNameById = (id: string | null): string => {
     if (!id) return '';
     return this.organizations().find((o) => o.id === id)?.name ?? '';
   };
 
   selectedOrgName = () => this.organizationsNameById(this.selectedOrgId());
+
+  orgAvatarOptions = () =>
+    this.organizations().map((o) => ({
+      id: o.id,
+      label: o.name,
+    }));
 
   ngOnInit() {
     this.loadOrganizations();
@@ -213,11 +235,8 @@ export class ClientsPageComponent {
 
   openOrgCreate() {
     this.orgName = '';
+    this.reopenClientDialogAfterOrg = false;
     this.orgCreateOpen.set(true);
-  }
-
-  closeOrgCreate() {
-    this.orgCreateOpen.set(false);
   }
 
   createOrg() {
@@ -229,18 +248,36 @@ export class ClientsPageComponent {
         this.loadOrganizations();
         this.selectedOrgId.set(created.id);
         this.loadClients(created.id);
+        if (this.reopenClientDialogAfterOrg) {
+          this.clientCreateOpen.set(true);
+          this.reopenClientDialogAfterOrg = false;
+        }
       },
     });
   }
 
   openClientCreate() {
-    if (!this.selectedOrgId()) return;
     this.clientName = '';
     this.clientCreateOpen.set(true);
   }
 
   closeClientCreate() {
     this.clientCreateOpen.set(false);
+  }
+
+  onOrganizationPicked(orgId: string | null) {
+    if (!orgId) return;
+    this.selectedOrgId.set(orgId);
+    this.loadClients(orgId);
+  }
+
+  openOrgCreateFromClient() {
+    // Если пользователь начал с "Новый заказчик", но организаций нет — открываем создание организации
+    // и после успешного создания возвращаем его в диалог создания заказчика.
+    this.reopenClientDialogAfterOrg = true;
+    this.clientCreateOpen.set(false);
+    this.orgName = '';
+    this.orgCreateOpen.set(true);
   }
 
   createClient() {
@@ -256,6 +293,11 @@ export class ClientsPageComponent {
           this.loadClients(orgId);
         },
       });
+  }
+
+  closeOrgCreate() {
+    this.orgCreateOpen.set(false);
+    this.reopenClientDialogAfterOrg = false;
   }
 }
 

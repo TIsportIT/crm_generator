@@ -19,6 +19,7 @@ import { APP_VERSION } from '../config/app-version';
           >
           <a routerLink="/health" routerLinkActive="active">Health</a>
           <a routerLink="/clients" routerLinkActive="active">Заказчики</a>
+          <a routerLink="/ui" routerLinkActive="active">UI</a>
           <a routerLink="/settings" routerLinkActive="active">Settings</a>
         </nav>
       </header>
